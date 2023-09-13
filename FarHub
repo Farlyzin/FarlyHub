@@ -55,7 +55,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "??",
       SaveKey = true,
       GrabKeyFromSite = false,
-      Key = "far"
+      Key = "bladeballhub"
    }
 })
 
