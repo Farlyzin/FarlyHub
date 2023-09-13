@@ -44,18 +44,18 @@ local Window = Rayfield:CreateWindow({
    },
    Discord = {
       Enabled = true,
-      Invite = "hNX8VxcjMF",
+      Invite = "hmdUAW3e",
       RememberJoins = true
    },
-   KeySystem = false,
+   KeySystem = true,
    KeySettings = {
-      Title = "IDK",
+      Title = "FarHub Key",
       Subtitle = "Key System",
-      Note = "nuh",
+      Note = "join discord",
       FileName = "??",
-      SaveKey = true,
+      SaveKey = false,
       GrabKeyFromSite = false,
-      Key = "Hello"
+      Key = "farhub"
    }
 })
 
