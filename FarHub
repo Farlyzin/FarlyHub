@@ -49,8 +49,8 @@ local Window = Rayfield:CreateWindow({
    },
    KeySystem = true,
    KeySettings = {
-      Title = "IDK",
-      Subtitle = "Key System",
+      Title = "Join Discord",
+      Subtitle = "https://discord.gg/hmdUAW3e",
       Note = "nuh",
       FileName = "??",
       SaveKey = true,
