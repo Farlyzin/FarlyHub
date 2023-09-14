@@ -34,7 +34,7 @@ if workspace:FindFirstChild("AbilityThingyk1212") then
 end
 
 local Window = Rayfield:CreateWindow({
-   Name = "@EoFarly",
+   Name = "Blade Ball",
    LoadingTitle = "FarHub",
    LoadingSubtitle = "by Farlyzin",
    ConfigurationSaving = {
@@ -47,10 +47,10 @@ local Window = Rayfield:CreateWindow({
       Invite = "hmdUAW3e",
       RememberJoins = true
    },
-   KeySystem = false,
+   KeySystem = true,
    KeySettings = {
       Title = "FarHub Key",
-      Subtitle = "Key System",
+      Subtitle = "discord.gg/hmdUAW3e",
       Note = "Join Discord",
       FileName = "??",
       SaveKey = false,
@@ -61,7 +61,6 @@ local Window = Rayfield:CreateWindow({
 
 local AutoParry = Window:CreateTab("Auto Parry", 13014537525)
 local AutoOpen = Window:CreateTab("Auto Open", 13014546637)
-local Misc = Window:CreateTab("Misc", 13014546637)
 
 
 local function startAutoParry()
