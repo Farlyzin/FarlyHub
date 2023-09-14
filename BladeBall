@@ -53,7 +53,7 @@ local Window = Rayfield:CreateWindow({
       Subtitle = "discord.gg/hmdUAW3e",
       Note = "Join Discord",
       FileName = "farkey",
-      SaveKey = false,
+      SaveKey = true,
       GrabKeyFromSite = false,
       Key = "farhubx"
    }
@@ -264,7 +264,7 @@ end)
 local CloseFighting = AutoParry:CreateSection("Close Fighting")
 local SpamParry = AutoParry:CreateKeybind({
    Name = "Spam Parry (Hold)",
-   CurrentKeybind = "E",
+   CurrentKeybind = "C",
    HoldToInteract = true,
    Flag = "ToggleParrySpam", 
    Callback = function(Keybind)
