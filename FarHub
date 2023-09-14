@@ -1,1 +1,426 @@
 
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local runService = game:GetService("RunService")
+local workspace = game:GetService("Workspace")
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local abilitiesFolder = character:WaitForChild("Abilities")
+local UserInputService = game:GetService("UserInputService")
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local heartbeatConnection
+local upgrades = localPlayer.Upgrades
+local UseRage = false
+local sliderValue = 20
+
+local function onCharacterAdded(newCharacter)
+    character = newCharacter
+    abilitiesFolder = character:WaitForChild("Abilities")
+end
+
+localPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+local TruValue = Instance.new("StringValue")
+if workspace:FindFirstChild("AbilityThingyk1212") then
+    workspace:FindFirstChild("AbilityThingyk1212"):Remove()
+    task.wait(0.1)
+    TruValue.Parent = game:GetService("Workspace")
+        TruValue.Name = "AbilityThingyk1212"
+        TruValue.Value = "Dash" --Change to Use other ability
+    else
+        TruValue.Parent = game:GetService("Workspace")
+        TruValue.Name = "AbilityThingyk1212"
+        TruValue.Value = "Dash" --Change to Use other ability
+end
+
+local Window = Rayfield:CreateWindow({
+   Name = "Blade Ball",
+   LoadingTitle = "FarHub",
+   LoadingSubtitle = "by Farlyzin",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "BladeBallerlol",
+      FileName = "Configuration"
+   },
+   Discord = {
+      Enabled = true,
+      Invite = "hmdUAW3e",
+      RememberJoins = true
+   },
+   KeySystem = true,
+   KeySettings = {
+      Title = "FarHub Key",
+      Subtitle = "discord.gg/hmdUAW3e",
+      Note = "Join Discord",
+      FileName = "farkey",
+      SaveKey = false,
+      GrabKeyFromSite = false,
+      Key = "farhubx"
+   }
+})
+
+local AutoParry = Window:CreateTab("Auto Parry", 13014537525)
+local AutoOpen = Window:CreateTab("Auto Open", 13014546637)
+
+
+local function startAutoParry()
+    local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local ballsFolder = workspace:WaitForChild("Balls")
+    local parryButtonPress = replicatedStorage.Remotes.ParryButtonPress
+    local abilityButtonPress = replicatedStorage.Remotes.AbilityButtonPress
+
+    print("Script successfully ran.")
+
+    local function onCharacterAdded(newCharacter)
+        character = newCharacter
+    end
+    localPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+    if character then
+        print("Character found.")
+    else
+        print("Character not found.")
+        return
+    end
+    
+
+local function chooseNewFocusedBall()
+    local balls = ballsFolder:GetChildren()
+    for _, ball in ipairs(balls) do
+        if ball:GetAttribute("realBall") ~= nil and ball:GetAttribute("realBall") == true then
+            focusedBall = ball
+            print(focusedBall.Name)
+            break
+        elseif ball:GetAttribute("target") ~= nil then
+            focusedBall = ball
+            print(focusedBall.Name)
+            break
+        end
+    end
+    
+    if focusedBall == nil then
+        print("Debug: Could not find a ball that's the realBall or has a target.")
+    end
+    return focusedBall
+end
+
+
+
+
+
+    chooseNewFocusedBall()
+
+    local BASE_THRESHOLD = 0.15
+    local VELOCITY_SCALING_FACTOR_FAST = 0.050
+    local VELOCITY_SCALING_FACTOR_SLOW = 0.1
+
+    local function getDynamicThreshold(ballVelocityMagnitude)
+        if ballVelocityMagnitude > 60 then
+            print("Going Fast!")
+            return math.max(0.20, BASE_THRESHOLD - (ballVelocityMagnitude * VELOCITY_SCALING_FACTOR_FAST))
+        else
+            return math.min(0.01, BASE_THRESHOLD + (ballVelocityMagnitude * VELOCITY_SCALING_FACTOR_SLOW))
+        end
+    end
+
+    local function timeUntilImpact(ballVelocity, distanceToPlayer, playerVelocity)
+        local directionToPlayer = (character.HumanoidRootPart.Position - focusedBall.Position).Unit
+        local velocityTowardsPlayer = ballVelocity:Dot(directionToPlayer) - playerVelocity:Dot(directionToPlayer)
+        
+        if velocityTowardsPlayer <= 0 then
+            return math.huge
+        end
+        
+        return (distanceToPlayer - sliderValue) / velocityTowardsPlayer
+    end
+
+    local function isWalkSpeedZero()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            return humanoid.WalkSpeed == 0
+        end
+        return false
+    end
+
+
+    local function checkBallDistance()
+        if not character or not character:FindFirstChild("Highlight") then return end
+
+        local charPos = character.PrimaryPart.Position
+        local charVel = character.PrimaryPart.Velocity
+
+        if focusedBall and not focusedBall.Parent then
+            print("Focused ball lost parent. Choosing a new focused ball.")
+            chooseNewFocusedBall()
+        end
+        if not focusedBall then 
+            print("No focused ball.")
+            chooseNewFocusedBall()
+        end
+
+        local ball = focusedBall
+        local distanceToPlayer = (ball.Position - charPos).Magnitude
+        local ballVelocityTowardsPlayer = ball.Velocity:Dot((charPos - ball.Position).Unit)
+        
+        if distanceToPlayer < 10 then
+            parryButtonPress:Fire()
+        end
+        local isCheckingRage = false
+
+        if timeUntilImpact(ball.Velocity, distanceToPlayer, charVel) < getDynamicThreshold(ballVelocityTowardsPlayer) then
+            if character.Abilities["Raging Deflection"].Enabled and UseRage == true then
+                if not isCheckingRage then
+                    isCheckingRage = true
+                    abilityButtonPress:Fire()
+                    if not isWalkSpeedZero() then
+                        parryButtonPress:Fire()
+                    end
+                    isCheckingRage = false
+                end
+            else
+                parryButtonPress:Fire()
+            end
+        end
+    end
+
+
+    heartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        checkBallDistance()
+    end)
+end
+
+local function stopAutoParry()
+    if heartbeatConnection then
+        heartbeatConnection:Disconnect()
+        heartbeatConnection = nil
+    end
+end
+
+local Descrip = AutoParry:CreateButton({
+   Name = "Credits (Click)",
+   Callback = function()
+    Rayfield:Notify({
+   Title = "Credits",
+   Content = "Auto Parry By Farlyzin (Discord User)",
+   Duration = 60,
+   Image = 4483362458,
+   Actions = { -- Notification Buttons
+      Ignore = {
+         Name = "Okay!",
+         Callback = function()
+         print("The user tapped Okay!")
+      end
+   },
+},
+})
+end
+})
+
+local AutoParrySection = AutoParry:CreateSection("Auto Parry")
+
+local AutoParryToggle = AutoParry:CreateToggle({
+    Name = "Auto Parry",
+    CurrentValue = false,
+    Flag = "AutoParryFlag",
+    Callback = function(Value)
+        if Value then
+            startAutoParry()
+        else
+            stopAutoParry()
+        end
+    end,
+})
+
+
+local AutoRagingDeflect = AutoParry:CreateToggle({
+    Name = "Auto Rage Parry (MUST EQUIP RAGING DEFLECT)",
+    CurrentValue = false,
+    Flag = "AutoRagingDeflectFlag",
+    Callback = function(Value)
+        UseRage = Value
+    end,
+})
+
+local AntiAfkThing = AutoParry:CreateSection("Anti Afk")
+local Toggle = AutoParry:CreateToggle({
+   Name = "Anti Afk",
+   CurrentValue = false,
+   Flag = "AntiAfk", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        AntiAfkLol = Value
+                while true do wait()
+            if AntiAfkLol then
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+   vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+   wait(1)
+   vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+        end
+    end
+   end,
+})
+
+local CloseFighting = AutoParry:CreateSection("Close Fighting")
+local SpamParry = AutoParry:CreateKeybind({
+   Name = "Spam Parry (Hold)",
+   CurrentKeybind = "E",
+   HoldToInteract = true,
+   Flag = "ToggleParrySpam", 
+   Callback = function(Keybind)
+            local function click(a)
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,true,a,1)
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,false,a,1)
+end
+
+click(game:GetService("Players").LocalPlayer.PlayerGui.Hotbar.Block.Pressable1)
+   end,
+})
+
+local Configuration = AutoParry:CreateSection("Configuration")
+
+local DistanceSlider = AutoParry:CreateSlider({
+   Name = "Distance Configuration",
+   Range = {0, 100},
+   Increment = 1,
+   Suffix = "Distance",
+   CurrentValue = 20,
+   Flag = "DistanceSlider",
+   Callback = function(Value)
+       sliderValue = Value
+   end,
+})
+
+
+local ToggleParryOn = AutoParry:CreateKeybind({
+   Name = "Toggle Parry On (Bind)",
+   CurrentKeybind = "One",
+   HoldToInteract = false,
+   Flag = "ToggleParryOn", 
+   Callback = function(Keybind)
+AutoParryToggle:Set(true)
+
+   end
+})
+
+
+
+local ToggleParryOff = AutoParry:CreateKeybind({
+   Name = "Toggle Parry Off (Bind)",
+   CurrentKeybind = "Two",
+   HoldToInteract = false,
+   Flag = "ToggleParryOff",
+   Callback = function(Keybind)
+   AutoParryToggle:Set(false)
+   end,
+})
+local Configuration2 = AutoParry:CreateSection("Configuration2")
+local ChangeDistanceTothirty = AutoParry:CreateKeybind({
+   Name = "Change Distance to 30",
+   CurrentKeybind = "V",
+   HoldToInteract = false,
+   Flag = "Distanceto30", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Keybind)
+DistanceSlider:Set(30) -- The new slider integer value
+   end,
+})
+
+local ChangeDistanceToidk = AutoParry:CreateKeybind({
+   Name = "Change Distance to 100",
+   CurrentKeybind = "B",
+   HoldToInteract = false,
+   Flag = "Distanceto100", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Keybind)
+DistanceSlider:Set(100) -- The new slider integer value
+   end,
+})
+
+local AfkThing = AutoParry:CreateSection("Afk Play")
+local TpToSpawn = AutoParry:CreateToggle({
+    Name = "Tp To Spawn (So u can use autoparry and ppl cant come close)",
+    CurrentValue = false,
+    Flag = "SpawnTp",
+    Callback = function(Value)
+        TpSpawn = Value
+
+        spawn(function()
+                while true do wait()
+                if TpSpawn then
+                    character.HumanoidRootPart.CFrame = CFrame.new(-229, 123, 203)
+                    end
+                end
+            end)
+    end,
+})
+
+local TpToSpawn = AutoParry:CreateToggle({
+    Name = "Fake Platform (Im sure there risk getting reported using this, same as tp to spawn)",
+    CurrentValue = false,
+    Flag = "FakePlatform",
+    Callback = function(Value)
+        FakePlatform = Value
+
+        spawn(function()
+                while true do wait()
+                if FakePlatform then
+                    character.Humanoid.HipHeight = 50
+                        else
+                            character.Humanoid.HipHeight = 0
+                    end
+                end
+            end)
+    end,
+})
+
+
+
+local OpenExplosionCrate = AutoOpen:CreateButton({
+   Name = "Open Explosion Crate",
+   Callback = function()
+
+game:GetService("ReplicatedStorage").Remotes.Store.RequestOpenExplosionBox:InvokeServer()
+
+end
+})
+
+local OpenWeaponCrate = AutoOpen:CreateButton({
+   Name = "Open Weapon Crate",
+   Callback = function()
+
+game:GetService("ReplicatedStorage").Remotes.Store.RequestOpenSwordBox:InvokeServer()
+
+end
+})
+
+local OpenExplosionCrateToggle = AutoOpen:CreateToggle({
+    Name = "Auto Open Explosion Crate (Disable before re-executing script, cuz of configuration)",
+    CurrentValue = false,
+    Flag = "ExplosionCrate",
+    Callback = function(Value)
+        OpenExplosionCrate = Value
+
+        while true do wait()
+            if OpenExplosionCrate then
+
+game:GetService("ReplicatedStorage").Remotes.Store.RequestOpenExplosionBox:InvokeServer()
+
+            end
+    end
+    end,
+})
+
+local OpenWeaponCrateToggle = AutoOpen:CreateToggle({
+    Name = "Auto Open Weapon Cratee (Disable before re-executing script, cuz of configuration)",
+    CurrentValue = false,
+    Flag = "OpenWeaponCrate",
+    Callback = function(Value)
+        OpenSwordCrate = Value
+
+        while true do wait()
+            if OpenSwordCrate then
+game:GetService("ReplicatedStorage").Remotes.Store.RequestOpenSwordBox:InvokeServer()
+            end
+    end
+    end,
+})
