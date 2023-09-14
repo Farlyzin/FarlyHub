@@ -55,7 +55,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "farkey",
       SaveKey = true,
       GrabKeyFromSite = false,
-      Key = "farhubx"
+      Key = "bladeballhub"
    }
 })
 
