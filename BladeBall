@@ -52,10 +52,10 @@ local Window = Rayfield:CreateWindow({
       Title = "FarHub Key",
       Subtitle = "discord.gg/hmdUAW3e",
       Note = "Join Discord",
-      FileName = "??",
+      FileName = "farkey",
       SaveKey = false,
       GrabKeyFromSite = false,
-      Key = "FarlyzinYt"
+      Key = "farhubx"
    }
 })
 
