@@ -427,25 +427,25 @@ game:GetService("ReplicatedStorage").Remotes.Store.RequestOpenSwordBox:InvokeSer
 
 
 
-local emotes = Misc2:CreateSection("Emotes")
+local emotes = Misc:CreateSection("Emotes")
 
-local EmoteEffect = Misc2:CreateButton({
+local EmoteEffect = Misc:CreateButton({
    Name = "Gamepass Emote Effect + Music (everyone sees), Credit to idk who",
    Callback = function()
    local args = {[1] = true,[2] = "Empyrean"}game:GetService("ReplicatedStorage").Remotes.CustomEmote:FireServer(unpack(args))
 end
 })
 
-local ActualEmote = Misc2:CreateButton({
+local ActualEmote = Misc:CreateButton({
    Name = "Gamepass Emote (Press R, after pressing button), Everyone sees",
    Callback = function()
    character:FindFirstChildOfClass("Model").Name = "Empyrean Greatblade"
 end
 })
 
-local Funnythingslol = Misc2:CreateSection("Funny Thing")
+local Funnythingslol = Misc:CreateSection("Funny Thing")
 
-local EquipTelekinesis = Misc2:CreateButton({
+local EquipTelekinesis = Misc:CreateButton({
    Name = "Equip Telekinesis",
    Callback = function()
 
@@ -461,7 +461,7 @@ game:GetService("ReplicatedStorage").Remotes.kebaind:FireServer()
 end
 })
 
-local BreakBall = Misc2:CreateButton({
+local BreakBall = Misc:CreateButton({
    Name = "Break Ball (You need telekinesis owned)",
    Callback = function()
     
@@ -491,7 +491,7 @@ local BreakBallToggle = Tab:CreateToggle({
    end,
 })
 
-local UseTelekines = Misc2:CreateButton({
+local UseTelekines = Misc:CreateButton({
    Name = "Use telekinesis (even from lobby) (Must own telekinesis)",
    Callback = function()
    local args = {
@@ -531,7 +531,7 @@ game:GetService("ReplicatedStorage").Remotes.Telekinesis:FireServer(unpack(args)
 end
 })
 
-local ResetCD = Misc2:CreateButton({
+local ResetCD = Misc:CreateButton({
    Name = "Reset Cooldown",
    Callback = function()
     character.HumanoidRootPart.CFrame = CFrame.new(-10002.240021, 123.299988, 200.441544)
